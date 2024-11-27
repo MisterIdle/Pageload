@@ -3,112 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product List</title>
-    <link rel="stylesheet" href="style.css">
+    <title>FrikAFrak</title>
+    <!--make favicon appear in the browser tab-->
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <link rel="stylesheet" href="style/styles.css">
 </head>
-<body>
-    <h1>Product List</h1>
-
-    <div id="products"></div>
-    <div id="pagination" class="pagination"></div>
-    <div id="loading" class="loading" style="display:none;">Loading...</div>
-    
-    <script>
-        const productsList = document.getElementById('products');
-        const loadingIndicator = document.getElementById('loading');
-        const paginationContainer = document.getElementById('pagination');
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let page = parseInt(urlParams.get('page'));
-
-        console.log('page:', page);
-
-        let currentLoadZone = 1;
-        let isLoading = false;
-        const maxLoadCardPerLoad = 20;
-        const maxLoadCardPerPage = 100;
-
-        async function fetchProducts(startId, endId) {
-            try {
-                const response = await fetch(`http://localhost:3000/get-product?startId=${startId}&endId=${endId}`);
-                const data = await response.json();
-                return data;
-            } catch (error) {
-                console.error('Error fetching products:', error);
-                return [];
-            }
-        }
-
-        async function renderProducts() {
-            if (isLoading) return;
+    <body>
+        <header>
+            <div id="header" class="header">
+                <div class="left-section">
+                    <div class="logo-container">
+                        <img src="images/logo.png" alt="FrikAFrak logo">
+                    </div>
+                    <h1 class="site-title">FrikAFrak</h1>
+                </div>
             
-            isLoading = true;
-            loadingIndicator.style.display = 'block';
+                <div class="center-section">
+                    <div class="search-container">
+                        <input type="text" id="search" name="search"    placeholder="Rechercher des produits">
+                        <button id="search-button" class="search-button"><i     class="fas fa-search"></i></button>
+                    </div>
+                
+                    <div class="categories-container">
+                        <button class="category-button"     data-category="all">All</button>
+                        <button class="category-button"     data-category="electronics">Computers</button>
+                        <button class="category-button"     data-category="jewelery">Jewelry</button>
+                        <button class="category-button"     data-category="office">Office</button>
+                        <button class="category-button"     data-category="clothing">Clothing</button>
+                        <button class="category-button"     data-category="furniture">Furniture</button>
+                    </div>
+                </div>
+            
+                <!-- Section à droite : panier et profil -->
+                <div class="right-section">
+                    <div class="cart-container">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">3</span>
+                    </div>
+                    <div class="profile-container">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-            const startId = (currentLoadZone - 1) * maxLoadCardPerLoad + 1 + (page - 1) * maxLoadCardPerPage;
-            const endId = currentLoadZone * maxLoadCardPerLoad + (page - 1) * maxLoadCardPerPage;
-
-            const maxLoadCardPerPagePlusPage = maxLoadCardPerPage * page;
-            console.log('maxLoadCardPerPagePlusPage:', maxLoadCardPerPagePlusPage);
-
-            if (startId > maxLoadCardPerPagePlusPage) {
-                isLoading = false;
-                loadingIndicator.style.display = 'none';
-                renderPagination();
-                return;
-            }
-
-            console.log('startId:', startId, 'endId:', endId);
-            const products = await fetchProducts(startId, endId);
-
-            products.forEach(product => {
-                const productDiv = document.createElement('div');
-                productDiv.classList.add('product');
-                productDiv.innerHTML = `
-                    <img src="${product.image_url}" alt="${product.name}" />
-                    <h2>${product.name}</h2>
-                    <p>${product.description}</p>
-                    <p>Price: $${product.price}</p>
-                    <p>Rating: ${product.rating}</p>
-                `;
-                productsList.appendChild(productDiv);
-            });
-
-            loadingIndicator.style.display = 'none';
-            isLoading = false;
-        }
-
-        function renderPagination() {
-            const pagination = document.createElement('div');
-            pagination.classList.add('pagination');
-            pagination.innerHTML = `
-                <button onclick="page = 1; updatePage();">First</button>
-                <button onclick="page = Math.max(1, page - 1); updatePage();">Previous</button>
-                <span>Page ${page}</span>
-                <button onclick="page = Math.min(10, page + 1); updatePage();">Next</button>
-                <button onclick="page = 10; updatePage();">Last</button>
-            `;
-            paginationContainer.innerHTML = '';
-            paginationContainer.appendChild(pagination);
-        }
-
-        function checkScroll() {
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-                currentLoadZone++;
-                renderProducts();
-            }
-        }
-
-        function updatePage() {
-            window.history.pushState({}, '', `?page=${page}`);
-            window.location.reload();
-            window.scrollTo(0, 0);
-            renderProducts();
-            renderPagination();
-        }
+        <!-- Nouvelle section pour le filtre -->
+        <div class="filter-section">
+            <div class="filter-container">
+                <h2>Filters</h2>
+                <label for="price"><i class="fas fa-dollar-sign"></i>Price</label>
+                <input type="range" id="price" min="0" max="1000" value="500" class="styled-range">
+            
+                <label for="category"><i class="fas fa-tags"></i>Category</label>
+                <input type="text" id="category" placeholder="Search category">
+            
+                <label for="brand"><i class="fas fa-tags"></i>Brand</label>
+                <input type="text" id="brand" placeholder="Search brand">
+            
+                <label for="color"><i class="fas fa-palette"></i>Color</label>
+                <input type="text" id="color" placeholder="Search color">
+            
+                <label for="size"><i class="fas fa-tape"></i>Size</label>
+                <input type="text" id="size" placeholder="Search size">
         
-        window.addEventListener('scroll', checkScroll);
-        renderProducts();
-    </script>    
-</body>
+                <label for="rating"><i class="fas fa-star"></i>Rating</label>
+                <input type="range" id="rating" min="0" max="5" value="3" class="styled-range">
+        
+                <label for="stock"><i class="fas fa-tags"></i>Stock</label>
+                <input type="checkbox" id="stock" checked>
+        
+                <label for="discount"><i class="fas fa-tags"></i>Discount</label>
+                <input type="checkbox" id="discount" checked>
+            
+                <button class="apply-filters-button">Apply Filters</button>
+            </div>
+        </div>    
+
+        <!-- Section pour les produits -->
+        <div id="product-section" class="product-section">
+            <h1 class="product-list-title">Product List</h1>
+            <div id="products" class="products-container"></div>
+            <div id="pagination" class="pagination"></div>
+            <div id="loading" class="loading" style="display:none;  ">Loading...</div>
+            <div id="error" class="error" style="display:none;">An error occurred</div>
+        </div>         
+
+        <script src="script.js"></script>
+        <script src="https://kit.fontawesome.com/0bcb48834b.js"     crossorigin="anonymous"></script>
+    </body>
 </html>
