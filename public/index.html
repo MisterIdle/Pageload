@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FrikAFrak</title>
-    <!--make favicon appear in the browser tab-->
     <link rel="icon" href="images/logo.png" type="image/png">
     <link rel="stylesheet" href="style/styles.css">
 </head>
@@ -25,16 +24,15 @@
                     </div>
                 
                     <div class="categories-container">
-                        <button class="category-button"     data-category="all">All</button>
-                        <button class="category-button"     data-category="electronics">Computers</button>
-                        <button class="category-button"     data-category="jewelery">Jewelry</button>
-                        <button class="category-button"     data-category="office">Office</button>
-                        <button class="category-button"     data-category="clothing">Clothing</button>
-                        <button class="category-button"     data-category="furniture">Furniture</button>
+                        <button class="category-button" data-category="all">All</button>
+                        <button class="category-button" data-category="electronics">Computers</button>
+                        <button class="category-button" data-category="jewelery">Jewelry</button>
+                        <button class="category-button" data-category="office">Office</button>
+                        <button class="category-button" data-category="clothing">Clothing</button>
+                        <button class="category-button" data-category="furniture">Furniture</button>
                     </div>
                 </div>
             
-                <!-- Section à droite : panier et profil -->
                 <div class="right-section">
                     <div class="cart-container">
                         <i class="fas fa-shopping-cart"></i>
@@ -47,7 +45,6 @@
             </div>
         </header>
 
-        <!-- Nouvelle section pour le filtre -->
         <div class="filter-section">
             <div class="filter-container">
                 <h2>Filters</h2>
@@ -79,16 +76,16 @@
             </div>
         </div>    
 
-        <!-- Section pour les produits -->
         <div id="product-section" class="product-section">
             <h1 class="product-list-title">Product List</h1>
+            <div class="pagination"></div>
             <div id="products" class="products-container"></div>
-            <div id="pagination" class="pagination"></div>
-            <div id="loading" class="loading" style="display:none;  ">Loading...</div>
+            <div class="pagination"></div>
+            <div id="loading" class="loading" style="display:none;">Loading...</div>
             <div id="error" class="error" style="display:none;">An error occurred</div>
         </div>         
 
         <script src="script.js"></script>
-        <script src="https://kit.fontawesome.com/0bcb48834b.js"     crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/0bcb48834b.js" crossorigin="anonymous"></script>
     </body>
 </html>

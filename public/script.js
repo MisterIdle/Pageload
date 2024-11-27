@@ -1,6 +1,6 @@
 const productsList = document.getElementById('products');
 const loadingIndicator = document.getElementById('loading');
-const paginationContainer = document.getElementById('pagination');
+const paginationContainers = document.querySelectorAll('.pagination');
 const errorContainer = document.getElementById('error');
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -136,8 +136,11 @@ function renderPagination() {
         <button onclick="page = totalPages; updatePage();" ${page === totalPages ? 'disabled' : ''}>Last</button>
     `;
 
-    paginationContainer.innerHTML = '';
-    paginationContainer.appendChild(pagination);
+    // A FIX LA PAGINATION
+    paginationContainers.forEach(container => {
+        container.innerHTML = '';
+        container.appendChild(pagination);
+    });
 }
 
 function createPageLinks(startPage, endPage) {
