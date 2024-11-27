@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Product List</h1>
+
+    <div id="products"></div>
+    <div id="pagination" class="pagination"></div>
+    <div id="loading" class="loading" style="display:none;">Loading...</div>
+    
+    <script>
+        const productsList = document.getElementById('products');
+        const loadingIndicator = document.getElementById('loading');
+        const paginationContainer = document.getElementById('pagination');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let page = parseInt(urlParams.get('page'));
+
+        console.log('page:', page);
+
+        let currentLoadZone = 1;
+        let isLoading = false;
+        const maxLoadCardPerLoad = 20;
+        const maxLoadCardPerPage = 100;
+
+        async function fetchProducts(startId, endId) {
+            try {
+                const response = await fetch(`http://localhost:3000/get-product?startId=${startId}&endId=${endId}`);
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                return [];
+            }
+        }
+
+        async function renderProducts() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            loadingIndicator.style.display = 'block';
+
+            const startId = (currentLoadZone - 1) * maxLoadCardPerLoad + 1 + (page - 1) * maxLoadCardPerPage;
+            const endId = currentLoadZone * maxLoadCardPerLoad + (page - 1) * maxLoadCardPerPage;
+
+            const maxLoadCardPerPagePlusPage = maxLoadCardPerPage * page;
+            console.log('maxLoadCardPerPagePlusPage:', maxLoadCardPerPagePlusPage);
+
+            if (startId > maxLoadCardPerPagePlusPage) {
+                isLoading = false;
+                loadingIndicator.style.display = 'none';
+                renderPagination();
+                return;
+            }
+
+            console.log('startId:', startId, 'endId:', endId);
+            const products = await fetchProducts(startId, endId);
+
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.classList.add('product');
+                productDiv.innerHTML = `
+                    <img src="${product.image_url}" alt="${product.name}" />
+                    <h2>${product.name}</h2>
+                    <p>${product.description}</p>
+                    <p>Price: $${product.price}</p>
+                    <p>Rating: ${product.rating}</p>
+                `;
+                productsList.appendChild(productDiv);
+            });
+
+            loadingIndicator.style.display = 'none';
+            isLoading = false;
+        }
+
+        function renderPagination() {
+            const pagination = document.createElement('div');
+            pagination.classList.add('pagination');
+            pagination.innerHTML = `
+                <button onclick="page = 1; updatePage();">First</button>
+                <button onclick="page = Math.max(1, page - 1); updatePage();">Previous</button>
+                <span>Page ${page}</span>
+                <button onclick="page = Math.min(10, page + 1); updatePage();">Next</button>
+                <button onclick="page = 10; updatePage();">Last</button>
+            `;
+            paginationContainer.innerHTML = '';
+            paginationContainer.appendChild(pagination);
+        }
+
+        function checkScroll() {
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                currentLoadZone++;
+                renderProducts();
+            }
+        }
+
+        function updatePage() {
+            window.history.pushState({}, '', `?page=${page}`);
+            window.location.reload();
+            window.scrollTo(0, 0);
+            renderProducts();
+            renderPagination();
+        }
+        
+        window.addEventListener('scroll', checkScroll);
+        renderProducts();
+    </script>    
+</body>
+</html>
