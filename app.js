@@ -74,7 +74,6 @@ app.get('/get-product', (req, res) => {
             console.error('Erreur lors de la récupération des produits:', err.message);
             res.status(500).send('Erreur lors de la récupération des produits');
         } else {
-            // Comptage des produits pour la pagination
             db.get('SELECT COUNT(*) AS count FROM products', (err, countRow) => {
                 if (err) {
                     console.error('Erreur lors du comptage des produits:', err.message);

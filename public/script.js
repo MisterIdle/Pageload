@@ -1,6 +1,9 @@
 const productsList = document.getElementById('products');
 const loadingIndicator = document.getElementById('loading');
+const scrollToTopButton = document.getElementById('scroll-to-top');
+
 const paginationContainers = document.querySelectorAll('.pagination');
+
 const errorContainer = document.getElementById('error');
 const urlParams = new URLSearchParams(window.location.search);
 
@@ -123,8 +126,12 @@ function handleNoProducts() {
 }
 
 function renderPagination() {
+    paginationContainers.forEach(container => {
+        container.innerHTML = '';
+    });
+
     const pagination = document.createElement('div');
-    pagination.classList.add('pagination');
+    pagination.classList.add('pagination-content');
 
     const { startPage, endPage } = getPaginationRange();
 
@@ -136,12 +143,12 @@ function renderPagination() {
         <button onclick="page = totalPages; updatePage();" ${page === totalPages ? 'disabled' : ''}>Last</button>
     `;
 
-    // A FIX LA PAGINATION
+    // Ajoute le contenu de la pagination dans chaque conteneur
     paginationContainers.forEach(container => {
-        container.innerHTML = '';
-        container.appendChild(pagination);
+        container.appendChild(pagination.cloneNode(true));
     });
 }
+
 
 function createPageLinks(startPage, endPage) {
     let links = '';
@@ -208,6 +215,22 @@ function createFooter() {
     `;
     document.body.appendChild(footer);
 }
+
+window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+        scrollToTopButton.style.display = 'flex';
+    } else {
+        scrollToTopButton.style.display = 'none';
+    }
+});
+
+scrollToTopButton.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
+
 
 window.addEventListener('scroll', checkScroll);
 
